@@ -126,14 +126,16 @@ if not game_won:
             st.rerun()
             
     with col_h:
-        if st.button("🟡 PETUNJUK AI", use_container_width=True):
+        if st.button("🟡 PETUNJUK ", use_container_width=True):
             st.session_state.show_hint = not st.session_state.show_hint
             st.rerun()
 
 # Tampilan Contekan Langkah Rute Tercepat (BFS)
 if st.session_state.show_hint and not game_won:
-    st.info("**Urutan Solusi Optimal (Ember A, B, C):**\n\n"
-            "[0,0,0] → [8,0,0] → [3,5,0] → [3,2,3] → [6,2,0] → [6,0,2] → [1,5,2] → [1,4,3] → **[4,4,0]** 🏆 (8 Langkah)")
+    st.info("**Urutkan Ember A, B, C):**\n\n"
+            "Menjadi **[4, 4, 0]**")
+    #("**Urutan Solusi Optimal (Ember A, B, C):**\n\n"
+            #"[0,0,0] → [8,0,0] → [3,5,0] → [3,2,3] → [6,2,0] → [6,0,2] → [1,5,2] → [1,4,3] → **[4,4,0]** 🏆 (8 Langkah)")
 
 # --- NOTIFIKASI KEMENANGAN ---
 if game_won:
