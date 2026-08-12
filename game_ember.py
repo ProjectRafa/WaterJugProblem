@@ -4,6 +4,38 @@ from collections import deque
 # --- KONFIGURASI HALAMAN ---
 st.set_page_config(page_title="Water Jug Problem", page_icon="💧", layout="centered")
 
+# --- CSS KHUSUS UNTUK MEMAKSA TAMPILAN HP MENYAMPING ---
+st.markdown("""
+    <style>
+    /* Memaksa kolom Streamlit agar tetap menyamping (horisontal) di mobile */
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: nowrap !important;
+        gap: 0.3rem !important;
+    }
+    [data-testid="column"] {
+        min-width: 0px !important;
+        flex: 1 1 0% !important;
+    }
+    
+    /* Penyesuaian responsif untuk layar HP kecil */
+    @media (max-width: 640px) {
+        div[data-testid="column"] h3 {
+            font-size: 12px !important;
+        }
+        div[data-testid="column"] h2 {
+            font-size: 14px !important;
+        }
+        div[data-testid="column"] span {
+            font-size: 12px !important; /* Mengecilkan seni ASCII ember agar pas di HP */
+        }
+        .stButton button {
+            font-size: 10px !important;
+            padding: 4px 2px !important;
+        }
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # --- INISIALISASI STATE GAME (SESSION STATE) ---
 if 'current_state' not in st.session_state:
     st.session_state.current_state = [0, 0, 0]
@@ -49,12 +81,12 @@ st.title("💧 Water Jug Problem")
 st.markdown("### Target: **A = 4L B = 4L C = 0L**")
 
 # Skor & Tombol Reset Atas
-col_sc, col_rs = st.columns([3, 1])
+col_sc, col_rs = st.columns([2, 1])
 with col_sc:
     st.metric(label="Langkah Anda", value=st.session_state.moves_count)
 with col_rs:
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    if st.button(" Ulangi Game", use_container_width=True):
+    if st.button("Ulangi Game", use_container_width=True):
         reset_game()
         st.rerun()
 
@@ -63,42 +95,34 @@ st.divider()
 # Cek Status Menang
 game_won = tuple(st.session_state.current_state) == goal_state
 
-# --- GRID EMBER (MENGGUNAKAN SIMULASI TEKS GEOMETRIS YANG AMAN) ---
+# --- GRID EMBER ---
 names = ['A', 'B', 'C']
-cols = st.columns(3)
+cols = st.columns(3, gap="small")
 
 for idx, col in enumerate(cols):
     with col:
-        # Menentukan tanda panah penunjuk jika ember sedang dipilih
         status_pilih = "👉 [DIPILIH] 👈" if st.session_state.selected_jug == idx else ""
-        st.markdown(f"<p style='text-align:center; color:#00f2fe; font-weight:bold;'>{status_pilih}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align:center; color:#00f2fe; font-weight:bold; font-size: 11px;'>{status_pilih}</p>", unsafe_allow_html=True)
         
         st.markdown(f"<h3 style='text-align: center; color: #c8d2f5;'>Ember {names[idx]} ({capacities[idx]}L)</h3>", unsafe_allow_html=True)
         
-        # Menggambar isi ember trapesium menggunakan teks balok karakter yang stabil di semua browser
         current_water = st.session_state.current_state[idx]
         max_water = capacities[idx]
         
         bucket_art = ""
-        # Gambar baris demi baris dari atas ke bawah
         for level in range(max_water, 0, -1):
             if level <= current_water:
-                # Bagian yang terisi air (Warna biru jernih)
-                bucket_art += "<span style='color:#3498db; font-size:24px;'>████████</span><br>"
+                bucket_art += "<span style='color:#3498db;'>████████</span><br>"
             else:
-                # Bagian ember yang kosong (Abu-abu gelap)
-                bucket_art += "<span style='color:#3e445e; font-size:24px;'>░░░░░░░░</span><br>"
+                bucket_art += "<span style='color:#3e445e;'>░░░░░░░░</span><br>"
         
-        # Tatakan bawah ember agar terlihat mengerucut
-        bucket_art += "<span style='color:#c8d2f5; font-size:20px;'>\______/</span>"
+        bucket_art += "<span style='color:#c8d2f5;'>\______/</span>"
         
-        # Tampilkan ke layar
-        st.markdown(f"<div style='text-align: center; line-height: 0.9; letter-spacing: 2px;'>{bucket_art}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='text-align: center; line-height: 0.9; letter-spacing: 1px;'>{bucket_art}</div>", unsafe_allow_html=True)
         st.markdown(f"<h2 style='text-align: center; color: #ffffff;'>{current_water} / {max_water} L</h2>", unsafe_allow_html=True)
         
-        # Tombol Interaksi per Ember
         if not game_won:
-            if st.button(f"👆 Pilih / Tuang {names[idx]}", key=f"btn_{idx}", use_container_width=True):
+            if st.button(f"👆 {names[idx]}", key=f"btn_{idx}", use_container_width=True):
                 if st.session_state.selected_jug == idx:
                     st.session_state.selected_jug = None
                 elif st.session_state.selected_jug is not None:
@@ -108,37 +132,33 @@ for idx, col in enumerate(cols):
                     st.session_state.selected_jug = idx
                     st.rerun()
 
-st.markdown("<p style='text-align: center; color: #6c757d; font-size: 14px;'>💡 <b>Cara Menuang:</b> Klik tombol 'Pilih/Tuang' pada ember asal, lalu klik tombol 'Pilih/Tuang' pada ember tujuan.</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6c757d; font-size: 12px;'>💡 <b>Cara Menuang:</b> Klik tombol ember asal, lalu klik tombol ember tujuan.</p>", unsafe_allow_html=True)
 st.divider()
 
-# --- PANEL KONTROL GLOBAL (FILL & DUMP) ---
+# --- PANEL KONTROL GLOBAL ---
 if not game_won:
-    col_f, col_d, col_h = st.columns(3)
+    col_f, col_d, col_h = st.columns(3, gap="small")
     
     with col_f:
-        if st.button("🟢 ISI PENUH", use_container_width=True, disabled=st.session_state.selected_jug is None):
+        if st.button("🟢 ISI", use_container_width=True, disabled=st.session_state.selected_jug is None):
             fill_jug(st.session_state.selected_jug)
             st.rerun()
             
     with col_d:
-        if st.button("🟠 BUANG AIR", use_container_width=True, disabled=st.session_state.selected_jug is None):
+        if st.button("🟠 BUANG", use_container_width=True, disabled=st.session_state.selected_jug is None):
             dump_jug(st.session_state.selected_jug)
             st.rerun()
             
     with col_h:
-        if st.button("🟡 PETUNJUK ", use_container_width=True):
+        if st.button("🟡 PETUNJUK", use_container_width=True):
             st.session_state.show_hint = not st.session_state.show_hint
             st.rerun()
 
-# Tampilan Contekan Langkah Rute Tercepat (BFS)
 if st.session_state.show_hint and not game_won:
     st.info("**CARA BERMAIN :**\n\n"
             "- Ember hanya bisa diisi penuh atau dibuang sampai habis\n"
-            "- Ember hanya bisa dituang sampai habis atau sampai penuh\n\n\n"
-
-        "**Goodluck**")
-    #("**Urutan Solusi Optimal (Ember A, B, C):**\n\n"
-            #"[0,0,0] → [8,0,0] → [3,5,0] → [3,2,3] → [6,2,0] → [6,0,2] → [1,5,2] → [1,4,3] → **[4,4,0]** 🏆 (8 Langkah)")
+            "- Ember hanya bisa dituang sampai habis atau sampai penuh\n\n"
+            "**Goodluck**")
 
 # --- NOTIFIKASI KEMENANGAN ---
 if game_won:
