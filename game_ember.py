@@ -158,7 +158,7 @@ if st.session_state.show_hint and not game_won:
     st.info("**CARA BERMAIN :**\n\n"
             "- Ember hanya bisa diisi penuh atau dibuang sampai habis\n"
             "- Ember hanya bisa dituang sampai habis atau sampai penuh\n\n"
-            "**Goodluck**")
+            "**Goodluck Khalisa**")
 
 # --- NOTIFIKASI KEMENANGAN ---
 if game_won:
