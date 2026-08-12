@@ -132,8 +132,11 @@ if not game_won:
 
 # Tampilan Contekan Langkah Rute Tercepat (BFS)
 if st.session_state.show_hint and not game_won:
-    st.info("**Urutkan Ember A, B, C):**\n\n"
-            "Menjadi **[4, 4, 0]**")
+    st.info("**CARA BERMAIN :**"
+            "- Ember hanya bisa diisi penuh atau dibuang sampai habis"
+            "- Ember hanya bisa dituang sampai habis atau sampai penuh"
+
+        "**Goodluck**")
     #("**Urutan Solusi Optimal (Ember A, B, C):**\n\n"
             #"[0,0,0] → [8,0,0] → [3,5,0] → [3,2,3] → [6,2,0] → [6,0,2] → [1,5,2] → [1,4,3] → **[4,4,0]** 🏆 (8 Langkah)")
 
